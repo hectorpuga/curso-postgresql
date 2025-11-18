@@ -59,31 +59,39 @@ where
   
   -- ¿Cuantos idiomas oficiales se hablan por continent?
   
-  
-SELECT
-  c."name" AS continent,
-  COUNT(DISTINCT a."language") AS total_idiomas_oficiales
+
+select COUNT(*),continent from (
+select DISTINCT c."name" as Continent, a."language" as Language  from countrylanguage a 
+inner join country b on a.countrycode=b.code
+inner join continent c on b.continent=c.code
+where isofficial=true
+
+) as totales
+group by continent
+
+
+SELECT 
+    c."name" AS Continent,
+    COUNT(DISTINCT a."language") AS OfficialLanguagesCount
 FROM countrylanguage a
-INNER JOIN country b ON a.countrycode = b.code
-INNER JOIN continent c ON b.continent = c.code
-WHERE a.isofficial = true
+INNER JOIN country b 
+    ON a.countrycode = b.code
+INNER JOIN continent c 
+    ON b.continent = c.code
+WHERE a.isofficial = TRUE
 GROUP BY c."name"
 ORDER BY c."name";
 
-    
-select COUNT(*),continent from (
-select
- DISTINCT c."name" as Continent,a."language"
-from
-  countrylanguage a
-  
-  inner JOIN country b ON a.countrycode = b.code
-  inner JOIN continent c on b.continent=c.code
-where
-  a.isofficial = true
 
-  
-)as totales GROUP by continent
-  
-  
+select DISTINCT c."name" as Continent, l."name" as Language  from countrylanguage a 
+inner join country b on a.countrycode=b.code
+inner join continent c on b.continent=c.code
+inner join "language" l on l.code =a.languagecode
+where isofficial=true;
+
+
+
+
+
+
    
