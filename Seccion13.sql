@@ -150,16 +150,37 @@ select 1 as val
   ('jr Mariano',8)
   
   
-  WITH RECURSIVE bosses as (
+WITH RECURSIVE bosses AS (
+  -- Initial row
+  SELECT id, name, reports_to, 1 AS depth
+  FROM employees
+  WHERE id = 1
+
+  UNION ALL
   
-  -- init
-  select id,name,reports_to from employees WHERE id=7
-  UNION
-  -- Recursive
+  -- Recursive step
+  SELECT e.id, e.name, e.reports_to, b.depth + 1
+  FROM employees e
+  INNER JOIN bosses b ON b.id = e.reports_to
+  WHERE b.depth < 10
+)
+SELECT 
+  b.*, 
+  e.name AS reports_to_name
+FROM bosses b
+LEFT JOIN employees e ON e.id = b.reports_to
+order by DEPTH 
   
-  select employees.id,employees.name,employees.reports_to from 
-  employees INNER JOIN bosses on bosses.id=employees.reports_to
+  
+  select followers.*,leaders.name as leader,follower."name" as follower from followers
+  inner join "user" leaders on leaders.id=followers.leader_id
+  inner join "user" follower on follower.id=followers.follower_id
+
+  select follower_id from followers where leader_id=1
   
   
-  )
-  select * from bosses
+  select * from followers where leader_id in (  select follower_id from followers where leader_id=1
+)
+  
+  
+  
